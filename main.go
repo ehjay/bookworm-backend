@@ -4,8 +4,10 @@ import (
     "encoding/json"
     "fmt"
     "net/http"
+
     "goji.io"
     "goji.io/pat"
+    "gopkg.in/mgo.v2"
 )
 
 func allBooks(w http.ResponseWriter, r *http.Request) {
@@ -22,6 +24,8 @@ func logging(h http.Handler) http.Handler {
 }
 
 func main() {
+    session, _ := mgo.Dial("localhost")
+    session.Close()
     mux := goji.NewMux()
     mux.HandleFunc(pat.Get("/books"), allBooks)
     mux.Use(logging)
