@@ -53,7 +53,11 @@ Start the server:
 
   go run main.go
 
-Example request:
+# Examples
+
+Add a book:
+
+Get the books:
 
   curl http://localhost:8080/books
 
