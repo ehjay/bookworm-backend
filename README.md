@@ -20,6 +20,35 @@ Install dependencies:
 
   godep go install
 
+Install mongodb:
+
+  https://docs.mongodb.com/master/tutorial/install-mongodb-on-ubuntu/
+
+Setup mongo config:
+
+  sudo vi /etc/systemd/system/mongodb.service
+
+with file:
+
+```
+[Unit]
+Description=High-performance, schema-free document-oriented database
+After=network.target
+
+[Service]
+User=mongodb
+ExecStart=/usr/bin/mongod --quiet --config /etc/mongod.conf
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Enable db on boot:
+
+  sudo systemctl enable mongodb
+
+Seed the db:
+
 Start the server:
 
   go run main.go
@@ -43,3 +72,25 @@ Example request:
 
   go get -u foo/bar
   godep update foo/bar
+
+# Using mongodb
+
+CLI:
+
+  mongo
+
+Start:
+
+  sudo systemctl start mongodb
+
+Stop:
+
+  sudo systemctl stop mongodb
+
+Status:
+
+  sudo systemctl status mongodb
+
+Default logs:
+
+  /var/log/mongodb/mongod.log
