@@ -37,10 +37,11 @@ func withDB(db *mgo.Session) Adapter {
   }
 }
 
-// route funcs
+// routes
 
 func allBooks(w http.ResponseWriter, r *http.Request) {
-    // db := context.Get(r, "database").(*mgo.Session)
+    db := context.Get(r, "database").(*mgo.Session)
+    fmt.Println(db);
     jsonOut, _ := json.Marshal("the books")
     fmt.Fprintf(w, string(jsonOut))
 }
@@ -51,12 +52,16 @@ func main() {
       log.Fatal("cannot dial mongo", err)
     }
     defer db.Close() // clean up when we’re done
+
     mux := goji.NewMux()
-    mux.HandleFunc(pat.Get("/books"), allBooks)
+
     mux.Use(logging)
     // mux.Use(withDB(db))
+
+    mux.HandleFunc(pat.Get("/books"), allBooks)
+
     fmt.Println("Server starting...");
-    if err := http.ListenAndServe("localhost:8080", nil); err != nil {
+    if err := http.ListenAndServe("localhost:8080", mux); err != nil {
       log.Fatal(err)
     }
 }
