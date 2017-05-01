@@ -69,6 +69,10 @@ go run main.go
 
 Add a book:
 
+```
+curl -X POST http://localhost:8080/book -H "application/json" -d '{"title":"Hamlet","author":"shakespeare"}'
+```
+
 Get the books:
 
 ```
