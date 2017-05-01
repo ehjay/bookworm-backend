@@ -70,13 +70,19 @@ go run main.go
 Add a book:
 
 ```
-curl -X POST http://localhost:8080/book -H "application/json" -d '{"title":"Hamlet","author":"shakespeare"}'
+curl -X POST http://localhost:8080/book -H "application/json" -d '{"title":"Hamlet","author":"Shakespeare"}'
 ```
 
 Get the books:
 
 ```
 curl http://localhost:8080/books
+```
+
+Delete a book:
+
+```
+curl -X DELETE http://localhost:8080/book/:id
 ```
 
 # Workflow

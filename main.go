@@ -91,6 +91,16 @@ func addBook(w http.ResponseWriter, r *http.Request) {
     }
 }
 
+func removeBook(w http.ResponseWriter, r *http.Request) {
+    db := context.Get(r, "database").(*mgo.Session)
+    id := pat.Param(r, "id")
+    log.Print("id: " + id)
+    if err := db.DB("bookworm").C("books").Remove(bson.M{"_id": bson.ObjectIdHex(id)}); err != nil {
+      http.Error(w, err.Error(), http.StatusBadRequest)
+      return
+    }
+}
+
 func main() {
     db, err := mgo.Dial("localhost")
     if err != nil {
@@ -103,6 +113,7 @@ func main() {
     mux.Use(withDB(db))
     mux.HandleFunc(pat.Get("/books"), allBooks)
     mux.HandleFunc(pat.Post("/book"), addBook)
+    mux.HandleFunc(pat.Delete("/book/:id"), removeBook)
     fmt.Println("Server starting...");
     if err := http.ListenAndServe("localhost:8080", mux); err != nil {
       log.Fatal(err)
