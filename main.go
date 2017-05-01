@@ -15,11 +15,11 @@ import (
     "github.com/gorilla/context"
 )
 
-type book struct {
-  ID      bson.ObjectId `json:"id" bson:"_id"`
-  Title   string        `json: "title" bson: "title"`
-  Author  string        `json: "author" bson: "author"`
-  Created time.Time     `json:"created" bson:"created"`
+type Book struct {
+  ID bson.ObjectId `json:"id" bson:"_id"`
+  Title string `json:"title" bson:"title"`
+  Author string `json:"author" bson:"author"`
+  Created time.Time `json:"created" bson:"created"`
 }
 
 // middleware
@@ -64,22 +64,20 @@ func withDB(db *mgo.Session) Adapter {
 
 func allBooks(w http.ResponseWriter, r *http.Request) {
   db := context.Get(r, "database").(*mgo.Session)
-  var books []*book
+  var books []*Book
   if err := db.DB("bookworm").C("books").
-    Find(nil).Sort("-when").Limit(100).All(&books); err != nil {
+    Find(nil).Sort("title").Limit(100).All(&books); err != nil {
     http.Error(w, err.Error(), http.StatusInternalServerError)
       return
     }
 
-  if err := json.NewEncoder(w).Encode(books); err != nil {
-    http.Error(w, err.Error(), http.StatusInternalServerError)
-      return
-  }
+  jsonOut, _ := json.Marshal(books)
+  fmt.Fprintf(w, string(jsonOut))
 }
 
 func addBook(w http.ResponseWriter, r *http.Request) {
     db := context.Get(r, "database").(*mgo.Session)
-    var b book
+    var b Book
     if err := json.NewDecoder(r.Body).Decode(&b); err != nil {
       http.Error(w, err.Error(), http.StatusBadRequest)
       return
