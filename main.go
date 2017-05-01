@@ -24,6 +24,19 @@ type book struct {
 
 // middleware
 
+func cors(h http.Handler) http.Handler {
+    fn := func(w http.ResponseWriter, r *http.Request) {
+        w.Header().Set("Access-Control-Allow-Origin", "*")
+        w.Header().Set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
+        if (r.Method == "OPTIONS") {
+          w.WriteHeader(200)
+        } else {
+          h.ServeHTTP(w, r)
+        }
+    }
+    return http.HandlerFunc(fn)
+}
+
 func logging(h http.Handler) http.Handler {
     fn := func(w http.ResponseWriter, r *http.Request) {
         fmt.Printf("Received request: %v\n", r.URL)
@@ -85,6 +98,7 @@ func main() {
     }
     defer db.Close() // clean up when we’re done
     mux := goji.NewMux()
+    mux.Use(cors)
     mux.Use(logging)
     mux.Use(withDB(db))
     mux.HandleFunc(pat.Get("/books"), allBooks)
